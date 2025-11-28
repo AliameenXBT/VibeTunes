@@ -1,0 +1,788 @@
+/* =======================================
+   GLOBAL RESET & THEME VARIABLES
+   ======================================= */
+
+/* Basic reset for consistent layout */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Theme colors and shared tokens */
+:root {
+  --color-bg-dark: #050816;
+  --color-bg-secondary: #111827;
+  --color-card: #020617;
+  --color-border: #1f2937;
+  --color-primary: #a855f7;
+  --color-accent: #ec4899;
+  --color-glow-pink: #f472b6;
+  --color-text-main: #f9fafb;
+  --color-text-muted: #9ca3af;
+}
+
+/* App body background and base typography */
+body {
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: var(--color-text-main);
+  background: radial-gradient(circle at top left, #1f2937, #020617 60%, #000);
+}
+
+/* =======================================
+   LAYOUT WRAPPER & CONTAINER
+   ======================================= */
+
+/* Main application background */
+.app {
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    var(--color-bg-dark),
+    var(--color-bg-secondary)
+  );
+  color: var(--color-text-main);
+}
+
+/* Constrain content width and add side padding */
+.container {
+  max-width: 64rem; /* similar to Tailwind max-w-4xl */
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Main content spacing */
+.main {
+  padding: 0 0 3rem 0;
+}
+
+/* =======================================
+   HEADER: Title + Search
+   ======================================= */
+
+.header {
+  padding: 1.5rem 0;
+}
+
+.header-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Header layout switches to row on larger screens */
+@media (min-width: 640px) {
+  .header-inner {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* "VibeTunes" gradient logo text */
+.app-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-glow-pink),
+    var(--color-accent)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Search bar container */
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 24rem;
+}
+
+/* Search icon inside input */
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* Search input styling */
+.search-input {
+  width: 100%;
+  padding: 0.7rem 1rem 0.7rem 2.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background-color: #020617;
+  color: var(--color-text-main);
+  outline: none;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.4);
+}
+
+/* =======================================
+   MAIN PLAYER CARD
+   ======================================= */
+
+/* Main player container with glassy glow effect */
+.player-card {
+  border-radius: 1.75rem;
+  border: 1px solid var(--color-border);
+  padding: 2rem;
+  margin-bottom: 3rem;
+
+  /* Deep glow + soft glass background */
+  background: radial-gradient(
+      circle at 10% 0%,
+      rgba(148, 163, 184, 0.45),
+      transparent 40%
+    ),
+    rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(24px);
+
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(168, 85, 247, 0.3);
+}
+
+/* =======================================
+   ALBUM COVER
+   ======================================= */
+
+/* (Optional wrapper if used; kept for future flexibility) */
+.album-cover-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* Main album art block (gradient frame) */
+.album-cover {
+  width: 16rem;
+  height: 16rem;
+  border-radius: 1.5rem;
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-glow-pink),
+    var(--color-accent)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 40px rgba(168, 85, 247, 0.7);
+  overflow: hidden;
+
+  /* 👇 This line centers it on both desktop & mobile */
+  margin: 0 auto 2rem;
+}
+
+
+/* Soft animated overlay over album cover */
+.album-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.4),
+    rgba(244, 114, 182, 0.4),
+    rgba(236, 72, 153, 0.4)
+  );
+  animation: pulse 2s infinite alternate;
+}
+
+/* (Legacy) used when album art was an emoji instead of an image */
+.album-emoji {
+  font-size: 3.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Actual album image (Deezer cover) */
+.album-main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+  border-radius: 1.5rem;
+}
+
+/* Soft breathing animation for overlays / loading text */
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* =======================================
+   SONG INFO (TITLE + ARTIST)
+   ======================================= */
+
+.song-info {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.song-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.artist-name {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+}
+
+/* =======================================
+   PROGRESS BAR + TIME
+   ======================================= */
+
+.progress-container {
+  margin-bottom: 2rem;
+}
+
+/* Background track bar */
+.progress-track {
+  position: relative;
+  width: 100%;
+  height: 0.5rem;
+  border-radius: 999px;
+  background-color: var(--color-bg-secondary);
+  overflow: hidden;
+}
+
+/* Filled portion (width controlled with JS) */
+.progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-accent)
+  );
+  width: 35%; /* default fallback; JS will override */
+  transition: width 0.3s ease;
+}
+
+/* Current time / total duration text */
+.progress-time {
+  margin-top: 0.4rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* =======================================
+   PLAYER CONTROLS (CENTER CONTROLS ROW)
+   ======================================= */
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Shared base for buttons */
+.control-btn,
+.play-btn {
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* Small circular buttons (prev/next/shuffle/loop/favorite/fullscreen) */
+.control-btn {
+  padding: 0.75rem;
+  border-radius: 999px;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-main);
+}
+
+.control-btn:hover {
+  transform: scale(1.1);
+  background-color: #1f2937;
+}
+
+/* Main play/pause button (bigger, with gradient glow) */
+.play-btn {
+  padding: 1.2rem 1.4rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-glow-pink)
+  );
+  box-shadow: 0 0 30px rgba(200, 100, 255, 0.5);
+  color: white;
+  font-size: 1.4rem;
+}
+
+.play-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 40px rgba(200, 100, 255, 0.7);
+}
+
+/* Toggle-style buttons (shuffle / loop / favorite) */
+.toggle-btn,
+.favorite-btn {
+  position: relative;
+}
+
+/* Active state for toggles */
+.toggle-btn.active,
+.favorite-btn.active {
+  background: radial-gradient(
+    circle at 30% 0%,
+    var(--color-glow-pink),
+    var(--color-primary)
+  );
+  box-shadow: 0 0 18px rgba(236, 72, 153, 0.7);
+}
+
+/* =======================================
+   VOLUME CONTROL
+   ======================================= */
+
+.volume-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  background-color: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.volume-icon {
+  font-size: 0.85rem;
+}
+
+.volume-slider {
+  width: 80px;
+}
+
+/* =======================================
+   TOP TRACKS LIST (HORIZONTAL SCROLL)
+   ======================================= */
+
+.top-tracks-section {
+  margin-bottom: 2rem;
+}
+
+.top-tracks-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+/* Scrollable row of track cards */
+.top-tracks-container {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0 0.5rem 1rem 0.5rem;
+}
+
+/* Single top track card */
+.track-card {
+  flex-shrink: 0;
+  width: 10rem;
+  cursor: pointer;
+}
+
+/* Artwork container with gradient frame */
+.track-art {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent),
+    var(--color-primary),
+    var(--color-glow-pink)
+  );
+  margin-bottom: 0.75rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 15px 30px rgba(236, 72, 153, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Deezer album cover image */
+.track-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+  border-radius: 1.25rem;
+}
+
+/* Gradient overlay over track art */
+.track-art-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(236, 72, 153, 0.3),
+    rgba(168, 85, 247, 0.3),
+    rgba(244, 114, 182, 0.3)
+  );
+}
+
+/* (Legacy) emoji in case no album art is used */
+.track-emoji {
+  font-size: 2.3rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Track title text */
+.track-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: 10rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Track artist text */
+.track-artist {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  width: 10rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hover effect on track card */
+.track-card:hover .track-art {
+  transform: scale(1.05);
+  box-shadow: 0 18px 35px rgba(236, 72, 153, 0.6);
+}
+
+/* Hide scrollbars for horizontal lists (Top Tracks / Recently Played) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* =======================================
+   RECENTLY PLAYED SECTION
+   ======================================= */
+
+.recently-played-section {
+  margin-top: 1rem;
+}
+
+.recently-played-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  padding: 0 0.5rem;
+}
+
+/* Scrollable row of "recently played" cards */
+.recently-played-container {
+  display: flex;
+  gap: 0.8rem;
+  overflow-x: auto;
+  padding: 0 0.5rem 1rem 0.5rem;
+}
+
+/* Placeholder text when no history yet */
+.recently-empty {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Single "recently played" card */
+.recent-card {
+  flex-shrink: 0;
+  width: 8rem;
+  cursor: pointer;
+}
+
+/* Artwork box for recently played */
+.recent-art {
+  width: 8rem;
+  height: 8rem;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  position: relative;
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recent-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Text under recently played cover */
+.recent-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.4rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-artist {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =======================================
+   MINI-PLAYER (BOTTOM FLOATING BAR)
+   ======================================= */
+
+.mini-player {
+  position: fixed;
+  left: 50%;
+  bottom: 0.75rem;
+  transform: translateX(-50%);
+  width: min(420px, 100% - 2rem);
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle at 0 0,
+    rgba(148, 163, 184, 0.5),
+    rgba(15, 23, 42, 0.98)
+  );
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.9),
+    0 0 25px rgba(168, 85, 247, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  backdrop-filter: blur(22px);
+  z-index: 50;
+}
+
+.mini-player-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Mini-player title + artist */
+.mini-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-artist {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mini-player play/pause button */
+.mini-play-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-glow-pink)
+  );
+  box-shadow: 0 0 18px rgba(236, 72, 153, 0.7);
+  color: #fff;
+  font-size: 1rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mini-play-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 22px rgba(236, 72, 153, 0.9);
+}
+
+/* =======================================
+   UTILITY STYLES
+   ======================================= */
+
+/* "Loading..." text style */
+.loading-text {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+/* =======================================
+   LYRICS PANEL
+   ======================================= */
+
+.lyrics-section {
+  margin-bottom: 1.25rem;
+}
+
+.lyrics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.lyrics-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.lyrics-toggle-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  background-color: rgba(15, 23, 42, 0.9);
+  color: var(--color-text-main);
+}
+
+/* Scrollable lyrics area */
+.lyrics-content {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* Hidden state (used when user toggles off) */
+.lyrics-content.hidden {
+  display: none;
+}
+
+/* =======================================
+   QUEUE: "UP NEXT"
+   ======================================= */
+
+.queue-section {
+  margin-top: 1rem;
+}
+
+.queue-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  padding: 0 0.5rem;
+}
+
+/* Vertical list of upcoming tracks */
+.queue-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0 0.5rem 1rem 0.5rem;
+}
+
+.queue-empty {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Single queue row */
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.75rem;
+  background-color: rgba(15, 23, 42, 0.9);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.queue-item:hover {
+  background-color: rgba(31, 41, 55, 0.95);
+  transform: translateY(-1px);
+}
+
+/* Small cover thumb in queue */
+.queue-cover {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.queue-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Text container in queue row */
+.queue-texts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.queue-title-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.queue-artist-text {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

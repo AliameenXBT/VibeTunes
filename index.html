@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>VibeTunes</title>
+
+    <!-- Make layout responsive on mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- =========================
+         APP WRAPPER
+         ========================= -->
+    <div class="app">
+      <!-- =========================~
+           HEADER: Logo + Search
+           ========================= -->
+      <header id="app-header" class="header">
+        <div class="container">
+          <div class="header-inner">
+            <!-- App title / logo text -->
+            <h1 id="app-title" class="app-title">VibeTunes</h1>
+
+            <!-- Search input (currently only UI, not wired to Deezer search yet) -->
+            <div id="search-container" class="search-container">
+              <span class="search-icon">🔍</span>
+              <input
+                id="search-input"
+                type="text"
+                placeholder="Search songs, artists..."
+                class="search-input"
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =========================
+           MAIN CONTENT
+           ========================= -->
+      <main class="main">
+        <div class="container">
+          <!-- =========================
+               MAIN PLAYER CARD
+               ========================= -->
+          <section id="player-section" class="player-card">
+            <!-- Album Cover (main artwork for current song) -->
+            <div id="album-cover" class="album-cover">
+              <div class="album-cover-overlay"></div>
+              <img
+                id="album-cover-img"
+                class="album-main-img"
+                src=""
+                alt="Album cover"
+              />
+            </div>
+
+            <!-- Current Song Info (title + artist) -->
+            <div id="song-info" class="song-info">
+              <h2 id="song-title" class="song-title">Neon Nights</h2>
+              <p id="artist-name" class="artist-name">
+                Synthwave Collective
+              </p>
+            </div>
+
+            <!-- Progress Bar + Time Display -->
+            <div id="progress-container" class="progress-container">
+              <div class="progress-track">
+                <!-- Filled bar (width updated by JS) -->
+                <div id="progress-bar" class="progress-bar"></div>
+              </div>
+
+              <div class="progress-time">
+                <!-- Current playback time -->
+                <span id="current-time">0:00</span>
+                <!-- Total duration -->
+                <span id="total-time">0:00</span>
+              </div>
+            </div>
+
+            <!-- Lyrics Section (dummy lyrics generated in JS) -->
+            <section id="lyrics-section" class="lyrics-section">
+              <div class="lyrics-header">
+                <h3 class="lyrics-title">Lyrics</h3>
+
+                <!-- Toggle button: show/hide lyrics text -->
+                <button id="toggle-lyrics" class="lyrics-toggle-btn">
+                  Hide
+                </button>
+              </div>
+
+              <div id="lyrics-content" class="lyrics-content">
+                <p id="lyrics-text">
+                  Lyrics will appear here for the current song.
+                </p>
+              </div>
+            </section>
+
+            <!-- Player Controls: shuffle / prev / play-pause / next / loop / volume / favorite -->
+            <div id="controls-container" class="controls">
+              <!-- Shuffle toggle -->
+              <button id="shuffle-button" class="control-btn toggle-btn">
+                🔀
+              </button>
+
+              <!-- Previous song -->
+              <button id="prev-button" class="control-btn">⏮</button>
+
+              <!-- Play / Pause -->
+              <button id="play-pause-button" class="play-btn">
+                <span id="play-pause-icon">▶</span>
+              </button>
+
+              <!-- Next song -->
+              <button id="next-button" class="control-btn">⏭</button>
+
+              <!-- Loop toggle (repeat current song) -->
+              <button id="loop-button" class="control-btn toggle-btn">
+                🔁
+              </button>
+
+              <!-- Volume control slider -->
+              <div class="volume-container">
+                <span class="volume-icon">🔊</span>
+                <input
+                  id="volume-slider"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value="0.8"
+                  class="volume-slider"
+                />
+              </div>
+
+              <!-- Favorite toggle (saved to localStorage) -->
+              <button id="favorite-button" class="control-btn favorite-btn">
+                <span id="favorite-icon">♡</span>
+              </button>
+            </div>
+
+            <!-- Fullscreen toggle for the whole app -->
+            <button id="fullscreen-button" class="control-btn">
+              ⛶
+            </button>
+          </section>
+
+          <!-- =========================
+               TOP TRACKS CAROUSEL
+               (cards injected by JS from Deezer data)
+               ========================= -->
+          <section id="top-tracks-section" class="top-tracks-section">
+            <h3 id="top-tracks-title" class="top-tracks-title">
+              Top Tracks
+            </h3>
+
+            <div
+              id="top-tracks-container"
+              class="top-tracks-container scrollbar-hide"
+            >
+              <!-- Track cards are dynamically created in script.js -->
+            </div>
+          </section>
+
+          <!-- =========================
+               RECENTLY PLAYED SECTION
+               ========================= -->
+          <section
+            id="recently-played-section"
+            class="recently-played-section"
+          >
+            <h3 class="recently-played-title">Recently Played</h3>
+
+            <div
+              id="recently-played-container"
+              class="recently-played-container"
+            >
+              <!-- Placeholder text, hidden once songs are played -->
+              <p id="recently-empty" class="recently-empty">
+                No songs played yet.
+              </p>
+            </div>
+          </section>
+
+          <!-- =========================
+               QUEUE: "Up Next"
+               ========================= -->
+          <section id="queue-section" class="queue-section">
+            <h3 class="queue-title">Up Next</h3>
+
+            <div id="queue-container" class="queue-container">
+              <!-- Placeholder text, replaced by queue items from JS -->
+              <p id="queue-empty" class="queue-empty">
+                Queue will update when songs load.
+              </p>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- =========================
+         MINI-PLAYER (BOTTOM BAR)
+         Stays visible at bottom of screen
+         ========================= -->
+    <footer id="mini-player" class="mini-player">
+      <div class="mini-player-info">
+        <!-- Mini-player song title -->
+        <span id="mini-title" class="mini-title">VibeTunes</span>
+        <!-- Mini-player artist name -->
+        <span id="mini-artist" class="mini-artist">Ready to play</span>
+      </div>
+
+      <!-- Mini-player play / pause (mirrors main controls) -->
+      <button id="mini-play-pause" class="mini-play-btn">
+        <span id="mini-play-icon">▶</span>
+      </button>
+    </footer>
+
+    <!-- Main JavaScript file: handles Deezer API, audio, UI logic -->
+    <script src="script.js"></script>
+  </body>
+</html>
