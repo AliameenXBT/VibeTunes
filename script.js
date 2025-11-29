@@ -1,4 +1,6 @@
-// ========== STATE ==========
+// ==============================
+// GLOBAL STATE
+// ==============================
 let isPlaying = false;
 let songs = [];
 let currentIndex = 0;
@@ -9,12 +11,17 @@ let isLoop = false;
 let favorites = [];
 let recentlyPlayed = [];
 
-// Deezer API + CORS proxy
+// Deezer API endpoint (you can change q=lofi to q=rap, q=afrobeat, etc.)
 const DEEZER_URL = "https://api.deezer.com/search?q=lofi";
-const CORS_PROXY = "https://proxy.corsfix.com/?";
+
+// CORS proxy so the browser can call Deezer from Vercel
+const CORS_PROXY = "https://corsproxy.io/?";
+
 const FAVORITES_KEY = "vibetunes_favorites";
 
-// ========== DOM READY ==========
+// ==============================
+// DOM READY
+// ==============================
 document.addEventListener("DOMContentLoaded", () => {
   const playPauseButton = document.getElementById("play-pause-button");
   const prevButton = document.getElementById("prev-button");
@@ -33,17 +40,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleLyricsBtn = document.getElementById("toggle-lyrics");
   const lyricsContent = document.getElementById("lyrics-content");
 
-  // Loading text for top tracks
+  // Loading text while we fetch from Deezer
   if (topTracksContainer) {
     topTracksContainer.innerHTML =
       '<p class="loading-text">Loading tracks...</p>';
   }
 
-  // Create audio element
+  // Audio element used for playback
   audio = new Audio();
   audio.volume = 0.8;
 
-  // Audio events
+  // When a song finishes
   audio.addEventListener("ended", () => {
     if (isLoop) {
       audio.currentTime = 0;
@@ -53,12 +60,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // When metadata (duration) is loaded
   audio.addEventListener("loadedmetadata", () => {
     if (totalTimeEl) totalTimeEl.textContent = formatTime(audio.duration);
     if (currentTimeEl) currentTimeEl.textContent = "0:00";
     if (progressBar) progressBar.style.width = "0%";
   });
 
+  // While the song is playing, update progress/time
   audio.addEventListener("timeupdate", () => {
     if (!audio.duration) return;
     const percent = (audio.currentTime / audio.duration) * 100;
@@ -74,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Mini-player play/pause
+  // Mini-player play/pause button
   if (miniPlayPause) {
     miniPlayPause.addEventListener("click", () => {
       if (!audio || songs.length === 0) return;
@@ -82,16 +91,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Prev / Next
+  // Previous button
   if (prevButton) {
     prevButton.addEventListener("click", () => prevSong(true));
   }
 
+  // Next button
   if (nextButton) {
     nextButton.addEventListener("click", () => nextSong(true));
   }
 
-  // Shuffle / Loop toggles
+  // Shuffle toggle
   if (shuffleButton) {
     shuffleButton.addEventListener("click", () => {
       isShuffle = !isShuffle;
@@ -99,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Loop toggle
   if (loopButton) {
     loopButton.addEventListener("click", () => {
       isLoop = !isLoop;
@@ -106,14 +117,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Favorites button
+  // Favorite button
   if (favoriteButton) {
     favoriteButton.addEventListener("click", () => {
       toggleFavoriteForCurrent();
     });
   }
 
-  // Volume slider
+  // Volume control
   if (volumeSlider) {
     volumeSlider.addEventListener("input", (e) => {
       const v = parseFloat(e.target.value);
@@ -121,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Click-to-seek on progress bar
+  // Click on progress bar to seek
   if (progressTrack) {
     progressTrack.addEventListener("click", (event) => {
       if (!audio || !audio.duration) return;
@@ -132,19 +143,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Keyboard controls
+  // Keyboard shortcuts
   document.addEventListener("keydown", (event) => {
     if (!audio || songs.length === 0) return;
 
+    // Space = play/pause
     if (event.code === "Space") {
       event.preventDefault();
       isPlaying ? pauseCurrentSong() : playCurrentSong();
     }
 
+    // Right arrow = +5s
     if (event.code === "ArrowRight" && audio.duration) {
       audio.currentTime = Math.min(audio.currentTime + 5, audio.duration);
     }
 
+    // Left arrow = -5s
     if (event.code === "ArrowLeft") {
       audio.currentTime = Math.max(audio.currentTime - 5, 0);
     }
@@ -163,27 +177,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Load favorites from localStorage
+  // Load any saved favorites from localStorage
   loadFavoritesFromStorage();
 
-  // Fetch songs
+  // Fetch songs from Deezer
   fetchSongsFromDeezer();
 });
 
-// ========== FETCH SONGS ==========
+// ==============================
+// FETCH SONGS FROM DEEZER
+// ==============================
 function fetchSongsFromDeezer() {
-  fetch(CORS_PROXY + DEEZER_URL)
+  // encode URL for the proxy
+  const url = CORS_PROXY + encodeURIComponent(DEEZER_URL);
+
+  fetch(url)
     .then((res) => {
       if (!res.ok) throw new Error("HTTP error: " + res.status);
       return res.json();
     })
     .then((data) => {
+      // Map Deezer data into simple objects
       songs = data.data.map((track) => ({
         title: track.title,
         artist: track.artist.name,
         preview: track.preview,
         cover: track.album.cover,
       }));
+
+      // Keep first 5 songs
       songs = songs.slice(0, 5);
       console.log("Songs:", songs);
 
@@ -199,7 +221,9 @@ function fetchSongsFromDeezer() {
     });
 }
 
-// ========== SET CURRENT SONG ==========
+// ==============================
+// SET CURRENT SONG
+// ==============================
 function setCurrentSong(index, autoplay = false) {
   if (!songs || songs.length === 0) return;
 
@@ -214,17 +238,21 @@ function setCurrentSong(index, autoplay = false) {
   const miniTitle = document.getElementById("mini-title");
   const miniArtist = document.getElementById("mini-artist");
 
+  // Update big player info
   if (songTitleEl) songTitleEl.textContent = currentSong.title;
   if (artistNameEl) artistNameEl.textContent = currentSong.artist;
 
+  // Update album art
   if (albumCoverImg) {
     albumCoverImg.src = currentSong.cover;
     albumCoverImg.alt = currentSong.title + " cover";
   }
 
+  // Update mini-player text
   if (miniTitle) miniTitle.textContent = currentSong.title;
   if (miniArtist) miniArtist.textContent = currentSong.artist;
 
+  // Update audio source and reset time
   if (audio) {
     audio.src = currentSong.preview;
 
@@ -244,7 +272,9 @@ function setCurrentSong(index, autoplay = false) {
   renderQueue();
 }
 
-// ========== RENDER TOP TRACKS ==========
+// ==============================
+// RENDER TOP TRACKS CARDS
+// ==============================
 function renderTopTracks() {
   const container = document.getElementById("top-tracks-container");
   if (!container) return;
@@ -265,13 +295,16 @@ function renderTopTracks() {
       <p class="track-artist">${track.artist}</p>
     `;
 
+    // Click top track → play it
     card.addEventListener("click", () => setCurrentSong(index, true));
 
     container.appendChild(card);
   });
 }
 
-// ========== QUEUE (UP NEXT) ==========
+// ==============================
+// QUEUE ("UP NEXT")
+// ==============================
 function renderQueue() {
   const container = document.getElementById("queue-container");
   const emptyText = document.getElementById("queue-empty");
@@ -286,7 +319,7 @@ function renderQueue() {
 
   if (emptyText) emptyText.style.display = "none";
 
-  // Everything except currentIndex is "Up Next"
+  // Everything except the currentIndex goes into "Up Next"
   const queue = songs
     .map((s, i) => ({ ...s, index: i }))
     .filter((item) => item.index !== currentIndex);
@@ -311,6 +344,7 @@ function renderQueue() {
       </div>
     `;
 
+    // Click in queue → jump to that song
     card.addEventListener("click", () => {
       setCurrentSong(item.index, true);
     });
@@ -319,7 +353,9 @@ function renderQueue() {
   });
 }
 
-// ========== PLAY / PAUSE ==========
+// ==============================
+// PLAY / PAUSE
+// ==============================
 function playCurrentSong() {
   if (!audio || songs.length === 0) return;
 
@@ -352,16 +388,20 @@ function updatePlayPauseIcon() {
   if (miniPlayIcon) miniPlayIcon.textContent = symbol;
 }
 
-// ========== NEXT / PREV ==========
+// ==============================
+// NEXT / PREVIOUS
+// ==============================
 function nextSong(autoplay = true) {
   if (songs.length === 0) return;
 
   let nextIndex;
   if (isShuffle && songs.length > 1) {
+    // Pick random song that's not the current one
     do {
       nextIndex = Math.floor(Math.random() * songs.length);
     } while (nextIndex === currentIndex);
   } else {
+    // Normal next
     nextIndex = (currentIndex + 1) % songs.length;
   }
 
@@ -374,8 +414,11 @@ function prevSong(autoplay = true) {
   setCurrentSong(prevIndex, autoplay);
 }
 
-// ========== FAVORITES + LOCALSTORAGE ==========
+// ==============================
+// FAVORITES (OFFLINE via localStorage)
+// ==============================
 function getSongKey(song) {
+  // Use preview URL if available; fallback to title+artist
   return song.preview || song.title + "|" + song.artist;
 }
 
@@ -390,8 +433,11 @@ function toggleFavoriteForCurrent() {
   const key = getSongKey(songs[currentIndex]);
   const index = favorites.indexOf(key);
 
-  if (index === -1) favorites.push(key);
-  else favorites.splice(index, 1);
+  if (index === -1) {
+    favorites.push(key);
+  } else {
+    favorites.splice(index, 1);
+  }
 
   saveFavoritesToStorage();
   updateFavoriteIcon();
@@ -422,12 +468,21 @@ function saveFavoritesToStorage() {
   }
 }
 
-// ========== RECENTLY PLAYED ==========
+// ==============================
+// RECENTLY PLAYED
+// ==============================
 function addToRecentlyPlayed(song) {
   const key = getSongKey(song);
+
+  // Remove if it already exists in the list
   recentlyPlayed = recentlyPlayed.filter((item) => getSongKey(item) !== key);
+
+  // Add to the front
   recentlyPlayed.unshift(song);
+
+  // Keep only latest 6
   if (recentlyPlayed.length > 6) recentlyPlayed.pop();
+
   renderRecentlyPlayed();
 }
 
@@ -457,6 +512,7 @@ function renderRecentlyPlayed() {
       <p class="recent-artist">${track.artist}</p>
     `;
 
+    // Click a recently played track → jump to that song if it's in songs[]
     card.addEventListener("click", () => {
       const songIndex = songs.findIndex(
         (s) => getSongKey(s) === getSongKey(track)
@@ -468,7 +524,9 @@ function renderRecentlyPlayed() {
   });
 }
 
-// ========== LYRICS (FAKE / TEMPLATE) ==========
+// ==============================
+// LYRICS (FAKE GENERATED TEXT)
+// ==============================
 function updateLyrics(song) {
   const lyricsEl = document.getElementById("lyrics-text");
   if (!lyricsEl || !song) return;
@@ -496,7 +554,9 @@ function generateLyricsText(title, artist) {
   );
 }
 
-// ========== FULLSCREEN ==========
+// ==============================
+// FULLSCREEN TOGGLE
+// ==============================
 function toggleFullscreen() {
   const app = document.querySelector(".app");
   if (!app) return;
@@ -508,7 +568,9 @@ function toggleFullscreen() {
   }
 }
 
-// ========== UTILS ==========
+// ==============================
+// UTIL: FORMAT TIME
+// ==============================
 function formatTime(seconds) {
   if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
   const mins = Math.floor(seconds / 60);
