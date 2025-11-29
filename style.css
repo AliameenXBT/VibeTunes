@@ -786,3 +786,36 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ===============================
+   MOBILE TWEAKS FOR CONTROLS
+   =============================== */
+@media (max-width: 640px) {
+  /* Make the player card a bit tighter on mobile */
+  .player-card {
+    padding: 1.5rem 1rem;
+  }
+
+  /* Let controls wrap onto multiple lines and stay centered */
+  .controls {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* Put the big play button on its own row, centered */
+  .play-btn {
+    flex: 1 0 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Make the small buttons a bit tighter */
+  .control-btn {
+    padding: 0.6rem;
+  }
+
+  /* Volume takes less width on small screens */
+  .volume-slider {
+    width: 60px;
+  }
+}
